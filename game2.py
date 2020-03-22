@@ -245,9 +245,11 @@ def main():
 
                 if event.key == pygame.K_u:
                     player.increment_speed(1)
+                    text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
 
                 if event.key == pygame.K_d:
                     player.increment_speed(-1)
+                    text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
 
                 
                 print(player.getpos())
