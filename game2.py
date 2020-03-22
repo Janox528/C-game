@@ -87,18 +87,19 @@ class Player(Game_Object):
         self.image = pygame.transform.scale(self.image, (50, 50))
 
         self.lastpressed = "U"
+        self.speed = 10
 
         
 
     def move(self,direction):
         if direction == "U":
-            self.y -= 10
+            self.y -= self.speed
         if direction == "D":
-            self.y += 10
+            self.y += self.speed
         if direction == "L":
-            self.x -= 10
+            self.x -= self.speed
         if direction == "R":
-            self.x += 10
+            self.x += self.speed
 
     def getpos(self):
         return [self.getX(),self.getY()]
@@ -110,6 +111,9 @@ class Player(Game_Object):
     def setimage(self,image):
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (50, 50))
+
+    def increment_speed(self,val):
+        self.speed += val
 
 class Station(Game_Object):
     def draw(self,screen):
@@ -142,8 +146,8 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
 
-    song = pygame.mixer.music.load('sources/t2i.xm')
-    pygame.mixer.music.play(-1)
+    #song = pygame.mixer.music.load('sources/t2i.xm')
+    #pygame.mixer.music.play(-1)
     
     
     interface =  Interface("default")
@@ -233,6 +237,13 @@ def main():
                     running = False
                     pygame.quit()
                     sys.exit()
+
+                if event.key == pygame.K_u:
+                    player.increment_speed(1)
+
+                if event.key == pygame.K_d:
+                    player.increment_speed(-1)
+
                 
                 print(player.getpos())
                 if event.key == pygame.K_LEFT:
@@ -305,6 +316,9 @@ def main():
 
             text = font.render("Level " + str(game.current_level+1), True, (0, 128, 0))
             screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
+
+            text_speed = font.render("Speed " + str(player.speed), True, (0, 128, 0))
+            screen.blit(text_speed,(620 - text_speed.get_width() // 2, 100 - text_speed.get_height() // 2))
 
 
             for o in game.level[game.current_level].obstacles:
