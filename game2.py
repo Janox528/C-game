@@ -28,7 +28,7 @@ class Button():
     def getSizeX(self):
         return self.sizeX
     def getSizeY(self):
-        return self.sizeYxc
+        return self.sizeY
         
         
 class Interface():
@@ -191,6 +191,10 @@ def main():
 
     game = Game([level1,level2,level3])
 
+    text = font.render("Level " + str(game.current_level+1), True, (0, 128, 0))
+    text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
+
+
  
     pygame.mouse.set_visible(1)
     pygame.key.set_repeat(1, 30)
@@ -322,12 +326,9 @@ def main():
 
             
             
+            
 
-            text = font.render("Level " + str(game.current_level+1), True, (0, 128, 0))
-            screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
 
-            text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
-            screen.blit(text_speed,(620 - text_speed.get_width() // 2, 100 - text_speed.get_height() // 2))
 
 
             for o in game.level[game.current_level].obstacles:
@@ -339,7 +340,11 @@ def main():
             for s in game.level[game.current_level].stations:
                 s.draw(screen)
 
-                
+            screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
+
+            
+            screen.blit(text_speed,(620 - text_speed.get_width() // 2, 100 - text_speed.get_height() // 2))
+
                 
             interface.draw(screen)
  
