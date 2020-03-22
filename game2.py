@@ -251,18 +251,26 @@ def main():
                     if player.getX() - player.speed >= 0:
                         player.move("L")
                         player.lastpressed = "L"
+                    else:
+                        player.x = 0
                 if event.key == pygame.K_RIGHT:
                     if player.getX() + player.speed <= 750:
                         player.move("R")
                         player.lastpressed = "R"
+                    else:
+                        player.x = 700
                 if event.key == pygame.K_UP:
                     if player.getY() - player.speed >= 0:
                         player.move("U")
                         player.lastpressed = "U"
+                    else:
+                        player.y = 0
                 if event.key == pygame.K_DOWN:
                     if player.getY() + player.speed <= 550:
                         player.move("D")
                         player.lastpressed = "D"
+                    else:
+                        player.y = 550
 
                     
                     
