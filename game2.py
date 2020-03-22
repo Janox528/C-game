@@ -294,9 +294,9 @@ def main():
             if player.lastpressed == "D":
                 screen.blit(pygame.transform.rotate(player.image,180),player.getpos())
             if player.lastpressed == "L":
-                screen.blit(pygame.transform.rotate(player.image,270),player.getpos())
-            if player.lastpressed == "R":
                 screen.blit(pygame.transform.rotate(player.image,90),player.getpos())
+            if player.lastpressed == "R":
+                screen.blit(pygame.transform.rotate(player.image,270),player.getpos())
 
 
 
