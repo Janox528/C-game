@@ -317,7 +317,7 @@ def main():
             text = font.render("Level " + str(game.current_level+1), True, (0, 128, 0))
             screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
 
-            text_speed = font.render("Speed " + str(player.speed), True, (0, 128, 0))
+            text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
             screen.blit(text_speed,(620 - text_speed.get_width() // 2, 100 - text_speed.get_height() // 2))
 
 
