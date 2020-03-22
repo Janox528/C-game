@@ -283,6 +283,9 @@ def main():
             for s in game.level[game.current_level].stations:
                 if s.checkStationHit(player.getpos()):
                     player.setimage('sources/spag.png')
+                    song = pygame.mixer.music.load('sources/roi.ogg')
+                    pygame.mixer.music.play(-1)
+                    
 
             screen.fill(hintergrundfarbe)
 
