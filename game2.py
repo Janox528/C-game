@@ -48,7 +48,7 @@ class Interface():
         for b in self.buttonlist:
             b.draw(screen)
 
-class Obstacle():
+class Game_Object():
     def __init__(self,x,y,sizeX,sizeY):
         self.x = x
         self.y = y
@@ -67,22 +67,16 @@ class Obstacle():
     def checkObstacleHit(self,pos):
         return self.getX() <= pos[0]+50 and pos[0] <= self.getX() + self.getSizeX() and self.getY() <= pos[1]+50 and pos[1] <= self.getY() + self.getSizeY()
 
-class Goal():
-    def __init__(self,x,y,sizeX,sizeY):
-        self.x = x
-        self.y = y
-        self.sizeY = sizeY
-        self.sizeX = sizeX
+
+class Obstacle(Game_Object):
+    def draw(self,screen):
+        pygame.draw.rect(screen, (255, 0, 0), [self.x, self.y, self.sizeX, self.sizeY])
+    def checkObstacleHit(self,pos):
+        return self.getX() <= pos[0]+50 and pos[0] <= self.getX() + self.getSizeX() and self.getY() <= pos[1]+50 and pos[1] <= self.getY() + self.getSizeY()
+
+class Goal(Game_Object):
     def draw(self,screen):
         pygame.draw.rect(screen, (0, 255, 0), [self.x, self.y, self.sizeX, self.sizeY],3)
-    def getX(self):
-        return self.x
-    def getY(self):
-        return self.y
-    def getSizeX(self):
-        return self.sizeX
-    def getSizeY(self):
-        return self.sizeY
     def checkGoalHit(self,pos):
         return self.getX() <= pos[0]+50 and pos[0] <= self.getX() + self.getSizeX() and self.getY() <= pos[1]+50 and pos[1] <= self.getY() + self.getSizeY()
 
