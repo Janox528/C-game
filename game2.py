@@ -54,8 +54,6 @@ class Game_Object():
         self.y = y
         self.sizeY = sizeY
         self.sizeX = sizeX
-    def draw(self,screen):
-        pygame.draw.rect(screen, (255, 0, 0), [self.x, self.y, self.sizeX, self.sizeY])
     def getX(self):
         return self.x
     def getY(self):
@@ -64,8 +62,6 @@ class Game_Object():
         return self.sizeX
     def getSizeY(self):
         return self.sizeY
-    def checkObstacleHit(self,pos):
-        return self.getX() <= pos[0]+50 and pos[0] <= self.getX() + self.getSizeX() and self.getY() <= pos[1]+50 and pos[1] <= self.getY() + self.getSizeY()
 
 
 class Obstacle(Game_Object):
@@ -80,6 +76,40 @@ class Goal(Game_Object):
     def checkGoalHit(self,pos):
         return self.getX() <= pos[0]+50 and pos[0] <= self.getX() + self.getSizeX() and self.getY() <= pos[1]+50 and pos[1] <= self.getY() + self.getSizeY()
 
+class Player(Game_Object):
+
+    def __init__(self,x,y,sizeX,sizeY,image):
+        self.x = x
+        self.y = y
+        self.sizeY = sizeY
+        self.sizeX = sizeX
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (50, 50))
+
+        self.lastpressed = "U"
+
+        
+
+    def move(self,direction):
+        if direction == "U":
+            self.y -= 10
+        if direction == "D":
+            self.y += 10
+        if direction == "L":
+            self.x -= 10
+        if direction == "R":
+            self.x += 10
+
+    def getpos(self):
+        return [self.getX(),self.getY()]
+
+    def setpos(self,x,y):
+        self.x = x
+        self.y = y
+
+    
+        
+    
 class Level():
     instances = 0
 
@@ -96,10 +126,6 @@ class Game():
 
 
 
-char = pygame.image.load('toilpap.png')
-char = pygame.transform.scale(char, (50, 50))
-
-font = pygame.font.SysFont("comicsansms", 52)
 
 
 
@@ -116,6 +142,10 @@ def main():
     interface.createButton(60,30,20,20,"You clicked Button No.2")
 
     font = pygame.font.SysFont("arial", 50)
+    
+    player = Player(0,550,50,50,'toilpap.png')
+
+    font = pygame.font.SysFont("comicsansms", 52)
 
 
     #level 1
@@ -152,10 +182,8 @@ def main():
     clock = pygame.time.Clock()
  
 
-    #kreise = []
     hintergrundfarbe = (120,120, 120)
     screen.fill(hintergrundfarbe)
-    posi = [0,550]
 
     
     running = True
@@ -195,19 +223,23 @@ def main():
                     pygame.quit()
                     sys.exit()
                 
-                
+                print(player.getpos())
                 if event.key == pygame.K_LEFT:
-                    if posi[0] - 10 >= 0:
-                        posi[0] -= 10
+                    if player.getX() - 10 >= 0:
+                        player.move("L")
+                        player.lastpressed = "L"
                 if event.key == pygame.K_RIGHT:
-                    if posi[0] + 10 <= 750:
-                        posi[0] += 10
+                    if player.getX() + 10 <= 750:
+                        player.move("R")
+                        player.lastpressed = "R"
                 if event.key == pygame.K_UP:
-                    if posi[1] - 10 >= 0:
-                        posi[1] -= 10
+                    if player.getY() - 10 >= 0:
+                        player.move("U")
+                        player.lastpressed = "U"
                 if event.key == pygame.K_DOWN:
-                    if posi[1] + 10 <= 550:
-                        posi[1] += 10
+                    if player.getY() + 10 <= 550:
+                        player.move("D")
+                        player.lastpressed = "D"
 
                     
                     
@@ -217,17 +249,17 @@ def main():
 
 
             for g in game.level[game.current_level].goals:
-                if g.checkGoalHit(posi):
+                if g.checkGoalHit(player.getpos()):
                     print("gewonnen")
                     if game.current_level == game.level_count - 1:
                         game.current_level = 0
                     else:
                         game.current_level += 1
-                    posi = [0,550]
+                    player.setpos(0,500)
 
 
             for o in game.level[game.current_level].obstacles:
-                if o.checkObstacleHit(posi):
+                if o.checkObstacleHit(player.getpos()):
                     print("verloren")
                     Tk().wm_withdraw()
                     messagebox.showinfo('Info','Du hast verloren')
@@ -238,8 +270,20 @@ def main():
 
 
             screen.fill(hintergrundfarbe)
+
+            if player.lastpressed == "U":
+                screen.blit(pygame.transform.rotate(player.image,0),player.getpos())
+            if player.lastpressed == "D":
+                screen.blit(pygame.transform.rotate(player.image,180),player.getpos())
+            if player.lastpressed == "L":
+                screen.blit(pygame.transform.rotate(player.image,270),player.getpos())
+            if player.lastpressed == "R":
+                screen.blit(pygame.transform.rotate(player.image,90),player.getpos())
+
+
+
             
-            screen.blit(char,posi)
+            
 
             text = font.render("Level " + str(game.current_level+1), True, (0, 128, 0))
             screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
