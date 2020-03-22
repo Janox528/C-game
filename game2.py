@@ -28,7 +28,7 @@ class Button():
     def getSizeX(self):
         return self.sizeX
     def getSizeY(self):
-        return self.sizeY
+        return self.sizeYxc
         
         
 class Interface():
@@ -107,16 +107,25 @@ class Player(Game_Object):
         self.x = x
         self.y = y
 
-    
+    def setimage(self,image):
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (50, 50))
+
+class Station(Game_Object):
+    def draw(self,screen):
+        pygame.draw.rect(screen, (0, 0, 255), [self.x, self.y, self.sizeX, self.sizeY],3)
+    def checkStationHit(self,pos):
+        return self.getX() <= pos[0]+50 and pos[0] <= self.getX() + self.getSizeX() and self.getY() <= pos[1]+50 and pos[1] <= self.getY() + self.getSizeY()
         
     
 class Level():
     instances = 0
 
-    def __init__(self,obstacles,goals):
+    def __init__(self,obstacles,goals,stations):
         Level.instances += 1
         self.obstacles = obstacles
         self.goals = goals
+        self.stations = stations
 
 class Game():
     def __init__(self,level):
@@ -133,7 +142,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
 
-    song = pygame.mixer.music.load('t2i.xm')
+    song = pygame.mixer.music.load('sources/t2i.xm')
     pygame.mixer.music.play(-1)
     
     
@@ -143,7 +152,7 @@ def main():
 
     font = pygame.font.SysFont("arial", 50)
     
-    player = Player(0,550,50,50,'toilpap.png')
+    player = Player(0,550,50,50,'sources/toilpap.png')
 
     font = pygame.font.SysFont("comicsansms", 52)
 
@@ -151,10 +160,12 @@ def main():
     #level 1
     o1 = Obstacle(375,0,50,300)
     o2 = Obstacle(375,380,50,300)
-    o3 = Obstacle(100,100,100,100)
     g1 = Goal(650,150,70,70)
 
-    level1 = Level([o1,o2,o3],[g1])
+    s1 = Station(100,100,100,100)
+
+    level1 = Level([o1,o2],[g1],[s1])
+
 
 
     #level 2
@@ -163,7 +174,7 @@ def main():
     o6 = Obstacle(500,100,50,500)
     g2 = Goal(700,500,70,70)
 
-    level2 = Level([o4,o5,o6],[g2])
+    level2 = Level([o4,o5,o6],[g2],[])
 
     #level3
     o7 = Obstacle(375,0,50,300)
@@ -171,7 +182,7 @@ def main():
     o9 = Obstacle(100,100,100,100)
     g3 = Goal(650,150,70,70)
     
-    level3 = Level([o7,o8,o9],[g3])
+    level3 = Level([o7,o8,o9],[g3],[])
 
     game = Game([level1,level2,level3])
 
@@ -269,6 +280,10 @@ def main():
                     sys.exit()
 
 
+            for s in game.level[game.current_level].stations:
+                if s.checkStationHit(player.getpos()):
+                    player.setimage('sources/spag.png')
+
             screen.fill(hintergrundfarbe)
 
             if player.lastpressed == "U":
@@ -292,9 +307,13 @@ def main():
             for o in game.level[game.current_level].obstacles:
                 o.draw(screen)
                 
-
             for g in game.level[game.current_level].goals:
                 g.draw(screen)
+
+            for s in game.level[game.current_level].stations:
+                s.draw(screen)
+
+                
                 
             interface.draw(screen)
  
