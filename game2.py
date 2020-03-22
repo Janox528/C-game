@@ -113,7 +113,8 @@ class Player(Game_Object):
         self.image = pygame.transform.scale(self.image, (50, 50))
 
     def increment_speed(self,val):
-        self.speed += val
+        if 0 <= self.speed + val and self.speed + val <= 100:
+            self.speed += val
 
 class Station(Game_Object):
     def draw(self,screen):
