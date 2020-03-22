@@ -113,7 +113,7 @@ class Player(Game_Object):
         self.image = pygame.transform.scale(self.image, (50, 50))
 
     def increment_speed(self,val):
-        if 0 <= self.speed + val and self.speed + val <= 100:
+        if 0 <= self.speed + val and self.speed + val <= 50:
             self.speed += val
 
 class Station(Game_Object):
@@ -147,8 +147,8 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
 
-    #song = pygame.mixer.music.load('sources/t2i.xm')
-    #pygame.mixer.music.play(-1)
+    song = pygame.mixer.music.load('sources/t2i.xm')
+    pygame.mixer.music.play(-1)
     
     
     interface =  Interface("default")
