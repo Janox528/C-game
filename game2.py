@@ -121,7 +121,7 @@ class Bullet(Game_Object):
         self.y = y
         self.sizeY = sizeY
         self.sizeX = sizeX
-        self.direction = "U"
+        self.direction = direction
         self.image = pygame.image.load(image)
         self.image = pygame.transform.scale(self.image, (50, 50))
     def move(self):
@@ -137,15 +137,18 @@ class Bullet(Game_Object):
         return [self.getX(),self.getY()]
     def draw(self,screen):
         if self.direction == "U":
-            screen.blit(pygame.transform.rotate(self.image,0),self.getpos())
-        if self.direction == "D":
-            screen.blit(pygame.transform.rotate(self.image,180),self.getpos())
-        if self.direction == "L":
             screen.blit(pygame.transform.rotate(self.image,90),self.getpos())
-        if self.direction == "R":
+        if self.direction == "D":
             screen.blit(pygame.transform.rotate(self.image,270),self.getpos())
+        if self.direction == "L":
+            screen.blit(pygame.transform.rotate(self.image,180),self.getpos())
+        if self.direction == "R":
+            screen.blit(pygame.transform.rotate(self.image,0),self.getpos())
     def is_inbound(self,screen):
         return 0 <= self.x and self.x <= screen.get_size()[0] and 0 <= self.y and self.y <= screen.get_size()[1]
+
+    def collide(self,obst):
+        return obst.getX() <= self.x+self.sizeX and self.x <= obst.getX() + obst.getSizeX() and obst.getY() <= self.y+self.sizeY and self.y <= obst.getY() + obst.getSizeY()
 
     
 
@@ -382,11 +385,15 @@ def main():
             if bullet_exists:
                 bullet.draw(screen)
                 bullet.move()
+                print("bullet collide",bullet.collide(level1.obstacles[0]))
                 
                 if not bullet.is_inbound(screen):
                     bullet_exists = False
+                for obs in game.level[game.current_level].obstacles:
+                    if bullet.collide(obs):
+                        bullet_exists = False
                     
-            print(bullet_exists)
+            #print("bullet exist:",bullet_exists)
 
             
 
