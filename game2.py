@@ -89,8 +89,6 @@ class Player(Game_Object):
         self.lastpressed = "U"
         self.speed = 10
 
-        
-
     def move(self,direction):
         if direction == "U":
             self.y -= self.speed
@@ -115,6 +113,33 @@ class Player(Game_Object):
     def increment_speed(self,val):
         if 0 <= self.speed + val and self.speed + val <= 50:
             self.speed += val
+
+
+class Bullet(Game_Object):
+    def __init__(self,x,y,sizeX,sizeY,direction,image):
+        self.x = x
+        self.y = y
+        self.sizeY = sizeY
+        self.sizeX = sizeX
+        self.direction = "U"
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (50, 50))
+    def move(self):
+        if self.direction == "U":
+            self.y -= 10
+        if self.direction == "D":
+            self.y += 10
+        if self.direction == "L":
+            self.x -= 10
+        if self.direction == "R":
+            self.x += 10
+    def getpos(self):
+        return [self.getX(),self.getY()]
+    
+
+
+
+
 
 class Station(Game_Object):
     def draw(self,screen):
@@ -147,8 +172,8 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((800, 600))
 
-    song = pygame.mixer.music.load('sources/t2i.xm')
-    pygame.mixer.music.play(-1)
+    #song = pygame.mixer.music.load('sources/t2i.xm')
+    #pygame.mixer.music.play(-1)
     
     
     interface =  Interface("default")
@@ -205,6 +230,8 @@ def main():
     hintergrundfarbe = (120,120, 120)
     screen.fill(hintergrundfarbe)
 
+    bullet_exists = False
+
     
     running = True
     while running:
@@ -250,6 +277,17 @@ def main():
                 if event.key == pygame.K_d:
                     player.increment_speed(-1)
                     text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
+
+                if event.key == pygame.K_f:
+                    bullet_exists = True
+                    if player.lastpressed == "L":
+                        bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"L",'sources/fireball.png')
+                    if player.lastpressed == "R":
+                        bullet = Bullet(player.getX()+player.getSizeX(),player.getY()+int(player.getSizeY()/2),10,10,"R",'sources/fireball.png')
+                    if player.lastpressed == "U":
+                        bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"U",'sources/fireball.png')
+                    if player.lastpressed == "D":
+                        bullet = Bullet(player.getX()+int(player.getSizeX()/2),player.getY()+int(player.getSizeY()/2),10,10,"D",'sources/fireball.png')
 
                 
                 print(player.getpos())
@@ -315,6 +353,8 @@ def main():
 
             screen.fill(hintergrundfarbe)
 
+
+            #draw player
             if player.lastpressed == "U":
                 screen.blit(pygame.transform.rotate(player.image,0),player.getpos())
             if player.lastpressed == "D":
@@ -326,7 +366,18 @@ def main():
 
 
 
-            
+            #draw bullets
+            if bullet_exists:
+                if player.lastpressed == "U":
+                    screen.blit(pygame.transform.rotate(bullet.image,0),bullet.getpos())
+                if player.lastpressed == "D":
+                    screen.blit(pygame.transform.rotate(bullet.image,180),bullet.getpos())
+                if player.lastpressed == "L":
+                    screen.blit(pygame.transform.rotate(bullet.image,90),bullet.getpos())
+                if player.lastpressed == "R":
+                    screen.blit(pygame.transform.rotate(bullet.image,270),bullet.getpos())
+                bullet.move()
+
             
             
 
@@ -341,6 +392,7 @@ def main():
 
             for s in game.level[game.current_level].stations:
                 s.draw(screen)
+
 
             screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
 
