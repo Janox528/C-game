@@ -76,6 +76,11 @@ class Goal(Game_Object):
     def checkGoalHit(self,pos):
         return self.getX() <= pos[0]+50 and pos[0] <= self.getX() + self.getSizeX() and self.getY() <= pos[1]+50 and pos[1] <= self.getY() + self.getSizeY()
 
+class Obstacle_destructable(Obstacle):
+    def draw(self,screen):
+        pygame.draw.rect(screen, (255, 255, 0), [self.x, self.y, self.sizeX, self.sizeY])
+
+
 class Player(Game_Object):
 
     def __init__(self,x,y,sizeX,sizeY,image):
@@ -205,11 +210,13 @@ def main():
     #level 1
     o1 = Obstacle(375,0,50,300)
     o2 = Obstacle(375,380,50,300)
+    o3 = Obstacle_destructable(0,400,375,50)
+    oneu = Obstacle_destructable(375,300,50,100)
     g1 = Goal(650,150,70,70)
 
     s1 = Station(100,100,100,100)
 
-    level1 = Level([o1,o2],[g1],[s1])
+    level1 = Level([o1,o2,o3,oneu],[g1],[s1])
 
 
 
@@ -234,7 +241,7 @@ def main():
     text = font.render("Level " + str(game.current_level+1), True, (0, 128, 0))
     text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
 
-
+    effect = pygame.mixer.Sound('sources/shooot.wav')
  
     pygame.mouse.set_visible(1)
     pygame.key.set_repeat(1, 30)
@@ -243,7 +250,6 @@ def main():
  
 
     hintergrundfarbe = (120,120, 120)
-    screen.fill(hintergrundfarbe)
 
     bullet_exists = False
 
@@ -294,16 +300,19 @@ def main():
                     player.increment_speed(-1)
                     text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
 
-                if event.key == pygame.K_f:
-                    if player.lastpressed == "L" and not bullet_exists:
+                if event.key == pygame.K_f and not bullet_exists:
+                    if player.lastpressed == "L":
                         bullet = Bullet(player.getX()-int(player.getSizeX()/2),player.getY(),10,10,"L",'sources/fireball.png')
-                    if player.lastpressed == "R" and not bullet_exists:
+                    if player.lastpressed == "R":
                         bullet = Bullet(player.getX()+player.getSizeX(),player.getY(),10,10,"R",'sources/fireball.png')
-                    if player.lastpressed == "U" and not bullet_exists:
+                    if player.lastpressed == "U":
                         bullet = Bullet(player.getX(),player.getY()-int(player.getSizeY()/2),10,10,"U",'sources/fireball.png')
-                    if player.lastpressed == "D" and not bullet_exists:
+                    if player.lastpressed == "D":
                         bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"D",'sources/fireball.png')
+                    
+                    effect.play()
                     bullet_exists = True
+                    
 
                 
                 print(player.getpos())
@@ -393,6 +402,9 @@ def main():
             for obs in game.level[game.current_level].obstacles:
                 if bullet.collide(obs):
                     bullet_exists = False
+
+                    if type(obs) is Obstacle_destructable:
+                        game.level[game.current_level].obstacles.remove(obs)
                     
             #print("bullet exist:",bullet_exists)
 
