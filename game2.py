@@ -370,28 +370,28 @@ def main():
 
 
             #draw player
-            if player.lastpressed == "U":
-                screen.blit(pygame.transform.rotate(player.image,0),player.getpos())
-            if player.lastpressed == "D":
-                screen.blit(pygame.transform.rotate(player.image,180),player.getpos())
-            if player.lastpressed == "L":
-                screen.blit(pygame.transform.rotate(player.image,90),player.getpos())
-            if player.lastpressed == "R":
-                screen.blit(pygame.transform.rotate(player.image,270),player.getpos())
+        if player.lastpressed == "U":
+            screen.blit(pygame.transform.rotate(player.image,0),player.getpos())
+        if player.lastpressed == "D":
+            screen.blit(pygame.transform.rotate(player.image,180),player.getpos())
+        if player.lastpressed == "L":
+            screen.blit(pygame.transform.rotate(player.image,90),player.getpos())
+        if player.lastpressed == "R":
+            screen.blit(pygame.transform.rotate(player.image,270),player.getpos())
 
 
 
             #draw bullets
-            if bullet_exists:
-                bullet.draw(screen)
-                bullet.move()
-                print("bullet collide",bullet.collide(level1.obstacles[0]))
+        if bullet_exists:
+            bullet.draw(screen)
+            bullet.move()
+            print("bullet collide",bullet.collide(level1.obstacles[0]))
                 
-                if not bullet.is_inbound(screen):
+            if not bullet.is_inbound(screen):
+                bullet_exists = False
+            for obs in game.level[game.current_level].obstacles:
+                if bullet.collide(obs):
                     bullet_exists = False
-                for obs in game.level[game.current_level].obstacles:
-                    if bullet.collide(obs):
-                        bullet_exists = False
                     
             #print("bullet exist:",bullet_exists)
 
@@ -400,23 +400,23 @@ def main():
 
 
 
-            for o in game.level[game.current_level].obstacles:
-                o.draw(screen)
+        for o in game.level[game.current_level].obstacles:
+            o.draw(screen)
                 
-            for g in game.level[game.current_level].goals:
-                g.draw(screen)
+        for g in game.level[game.current_level].goals:
+            g.draw(screen)
 
-            for s in game.level[game.current_level].stations:
-                s.draw(screen)
+        for s in game.level[game.current_level].stations:
+            s.draw(screen)
 
 
-            screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
+        screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
 
             
-            screen.blit(text_speed,(620 - text_speed.get_width() // 2, 100 - text_speed.get_height() // 2))
+        screen.blit(text_speed,(620 - text_speed.get_width() // 2, 100 - text_speed.get_height() // 2))
 
                 
-            interface.draw(screen)
+        interface.draw(screen)
  
  
         # Inhalt von screen anzeigen.
