@@ -76,6 +76,11 @@ class Goal(Game_Object):
     def checkGoalHit(self,pos):
         return self.getX() <= pos[0]+50 and pos[0] <= self.getX() + self.getSizeX() and self.getY() <= pos[1]+50 and pos[1] <= self.getY() + self.getSizeY()
 
+class Obstacle_destructable(Obstacle):
+    def draw(self,screen):
+        pygame.draw.rect(screen, (255, 255, 0), [self.x, self.y, self.sizeX, self.sizeY])
+
+
 class Player(Game_Object):
 
     def __init__(self,x,y,sizeX,sizeY,image):
@@ -88,8 +93,6 @@ class Player(Game_Object):
 
         self.lastpressed = "U"
         self.speed = 10
-
-        
 
     def move(self,direction):
         if direction == "U":
@@ -115,6 +118,48 @@ class Player(Game_Object):
     def increment_speed(self,val):
         if 0 <= self.speed + val and self.speed + val <= 50:
             self.speed += val
+
+
+class Bullet(Game_Object):
+    def __init__(self,x,y,sizeX,sizeY,direction,image):
+        self.x = x
+        self.y = y
+        self.sizeY = sizeY
+        self.sizeX = sizeX
+        self.direction = direction
+        self.image = pygame.image.load(image)
+        self.image = pygame.transform.scale(self.image, (50, 50))
+    def move(self):
+        if self.direction == "U":
+            self.y -= 10
+        if self.direction == "D":
+            self.y += 10
+        if self.direction == "L":
+            self.x -= 10
+        if self.direction == "R":
+            self.x += 10
+    def getpos(self):
+        return [self.getX(),self.getY()]
+    def draw(self,screen):
+        if self.direction == "U":
+            screen.blit(pygame.transform.rotate(self.image,90),self.getpos())
+        if self.direction == "D":
+            screen.blit(pygame.transform.rotate(self.image,270),self.getpos())
+        if self.direction == "L":
+            screen.blit(pygame.transform.rotate(self.image,180),self.getpos())
+        if self.direction == "R":
+            screen.blit(pygame.transform.rotate(self.image,0),self.getpos())
+    def is_inbound(self,screen):
+        return 0 <= self.x and self.x <= screen.get_size()[0] and 0 <= self.y and self.y <= screen.get_size()[1]
+
+    def collide(self,obst):
+        return obst.getX() <= self.x+self.sizeX and self.x <= obst.getX() + obst.getSizeX() and obst.getY() <= self.y+self.sizeY and self.y <= obst.getY() + obst.getSizeY()
+
+    
+
+
+
+
 
 class Station(Game_Object):
     def draw(self,screen):
@@ -165,11 +210,13 @@ def main():
     #level 1
     o1 = Obstacle(375,0,50,300)
     o2 = Obstacle(375,380,50,300)
+    o3 = Obstacle_destructable(0,400,375,50)
+    oneu = Obstacle_destructable(375,300,50,100)
     g1 = Goal(650,150,70,70)
 
     s1 = Station(100,100,100,100)
 
-    level1 = Level([o1,o2],[g1],[s1])
+    level1 = Level([o1,o2,o3,oneu],[g1],[s1])
 
 
 
@@ -194,7 +241,7 @@ def main():
     text = font.render("Level " + str(game.current_level+1), True, (0, 128, 0))
     text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
 
-
+    effect = pygame.mixer.Sound('sources/shooot.wav')
  
     pygame.mouse.set_visible(1)
     pygame.key.set_repeat(1, 30)
@@ -203,7 +250,8 @@ def main():
  
 
     hintergrundfarbe = (120,120, 120)
-    screen.fill(hintergrundfarbe)
+
+    bullet_exists = False
 
     
     running = True
@@ -212,6 +260,7 @@ def main():
 
 
         ev = pygame.event.get()
+        screen.fill(hintergrundfarbe)
 
         
         
@@ -250,6 +299,20 @@ def main():
                 if event.key == pygame.K_d:
                     player.increment_speed(-1)
                     text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
+
+                if event.key == pygame.K_f and not bullet_exists:
+                    if player.lastpressed == "L":
+                        bullet = Bullet(player.getX()-int(player.getSizeX()/2),player.getY(),10,10,"L",'sources/fireball.png')
+                    if player.lastpressed == "R":
+                        bullet = Bullet(player.getX()+player.getSizeX(),player.getY(),10,10,"R",'sources/fireball.png')
+                    if player.lastpressed == "U":
+                        bullet = Bullet(player.getX(),player.getY()-int(player.getSizeY()/2),10,10,"U",'sources/fireball.png')
+                    if player.lastpressed == "D":
+                        bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"D",'sources/fireball.png')
+                    
+                    effect.play()
+                    bullet_exists = True
+                    
 
                 
                 print(player.getpos())
@@ -315,40 +378,58 @@ def main():
 
             screen.fill(hintergrundfarbe)
 
-            if player.lastpressed == "U":
-                screen.blit(pygame.transform.rotate(player.image,0),player.getpos())
-            if player.lastpressed == "D":
-                screen.blit(pygame.transform.rotate(player.image,180),player.getpos())
-            if player.lastpressed == "L":
-                screen.blit(pygame.transform.rotate(player.image,90),player.getpos())
-            if player.lastpressed == "R":
-                screen.blit(pygame.transform.rotate(player.image,270),player.getpos())
+
+            #draw player
+        if player.lastpressed == "U":
+            screen.blit(pygame.transform.rotate(player.image,0),player.getpos())
+        if player.lastpressed == "D":
+            screen.blit(pygame.transform.rotate(player.image,180),player.getpos())
+        if player.lastpressed == "L":
+            screen.blit(pygame.transform.rotate(player.image,90),player.getpos())
+        if player.lastpressed == "R":
+            screen.blit(pygame.transform.rotate(player.image,270),player.getpos())
 
 
 
-            
-            
-            
-
-
-
-
-            for o in game.level[game.current_level].obstacles:
-                o.draw(screen)
+            #draw bullets
+        if bullet_exists:
+            bullet.draw(screen)
+            bullet.move()
+            print("bullet collide",bullet.collide(level1.obstacles[0]))
                 
-            for g in game.level[game.current_level].goals:
-                g.draw(screen)
+            if not bullet.is_inbound(screen):
+                bullet_exists = False
+            for obs in game.level[game.current_level].obstacles:
+                if bullet.collide(obs):
+                    bullet_exists = False
 
-            for s in game.level[game.current_level].stations:
-                s.draw(screen)
-
-            screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
+                    if type(obs) is Obstacle_destructable:
+                        game.level[game.current_level].obstacles.remove(obs)
+                    
+            #print("bullet exist:",bullet_exists)
 
             
-            screen.blit(text_speed,(620 - text_speed.get_width() // 2, 100 - text_speed.get_height() // 2))
+
+
+
+
+        for o in game.level[game.current_level].obstacles:
+            o.draw(screen)
+                
+        for g in game.level[game.current_level].goals:
+            g.draw(screen)
+
+        for s in game.level[game.current_level].stations:
+            s.draw(screen)
+
+
+        screen.blit(text,(620 - text.get_width() // 2, 40 - text.get_height() // 2))
+
+            
+        screen.blit(text_speed,(620 - text_speed.get_width() // 2, 100 - text_speed.get_height() // 2))
 
                 
-            interface.draw(screen)
+        interface.draw(screen)
  
  
         # Inhalt von screen anzeigen.
