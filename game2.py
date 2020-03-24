@@ -135,6 +135,16 @@ class Bullet(Game_Object):
             self.x += 10
     def getpos(self):
         return [self.getX(),self.getY()]
+    def draw(self,screen):
+        if self.direction == "U":
+            screen.blit(pygame.transform.rotate(self.image,0),self.getpos())
+        if self.direction == "D":
+            screen.blit(pygame.transform.rotate(self.image,180),self.getpos())
+        if self.direction == "L":
+            screen.blit(pygame.transform.rotate(self.image,90),self.getpos())
+        if self.direction == "R":
+            screen.blit(pygame.transform.rotate(self.image,270),self.getpos())
+
     
 
 
@@ -279,15 +289,15 @@ def main():
                     text_speed = font.render("Speed " + str(player.speed), True, (255,165,0))
 
                 if event.key == pygame.K_f:
-                    bullet_exists = True
-                    if player.lastpressed == "L":
+                    if player.lastpressed == "L" and not bullet_exists:
                         bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"L",'sources/fireball.png')
-                    if player.lastpressed == "R":
+                    if player.lastpressed == "R" and not bullet_exists:
                         bullet = Bullet(player.getX()+player.getSizeX(),player.getY()+int(player.getSizeY()/2),10,10,"R",'sources/fireball.png')
-                    if player.lastpressed == "U":
+                    if player.lastpressed == "U" and not bullet_exists:
                         bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"U",'sources/fireball.png')
-                    if player.lastpressed == "D":
+                    if player.lastpressed == "D" and not bullet_exists:
                         bullet = Bullet(player.getX()+int(player.getSizeX()/2),player.getY()+int(player.getSizeY()/2),10,10,"D",'sources/fireball.png')
+                    bullet_exists = True
 
                 
                 print(player.getpos())
@@ -368,14 +378,7 @@ def main():
 
             #draw bullets
             if bullet_exists:
-                if player.lastpressed == "U":
-                    screen.blit(pygame.transform.rotate(bullet.image,0),bullet.getpos())
-                if player.lastpressed == "D":
-                    screen.blit(pygame.transform.rotate(bullet.image,180),bullet.getpos())
-                if player.lastpressed == "L":
-                    screen.blit(pygame.transform.rotate(bullet.image,90),bullet.getpos())
-                if player.lastpressed == "R":
-                    screen.blit(pygame.transform.rotate(bullet.image,270),bullet.getpos())
+                bullet.draw(screen)
                 bullet.move()
 
             
