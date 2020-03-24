@@ -144,6 +144,8 @@ class Bullet(Game_Object):
             screen.blit(pygame.transform.rotate(self.image,90),self.getpos())
         if self.direction == "R":
             screen.blit(pygame.transform.rotate(self.image,270),self.getpos())
+    def is_inbound(self,screen):
+        return 0 <= self.x and self.x <= screen.get_size()[0] and 0 <= self.y and self.y <= screen.get_size()[1]
 
     
 
@@ -380,8 +382,12 @@ def main():
             if bullet_exists:
                 bullet.draw(screen)
                 bullet.move()
+                
+                if not bullet.is_inbound(screen):
+                    bullet_exists = False
+                    
+            print(bullet_exists)
 
-            
             
 
 
