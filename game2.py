@@ -254,6 +254,7 @@ def main():
 
 
         ev = pygame.event.get()
+        screen.fill(hintergrundfarbe)
 
         
         
@@ -295,13 +296,13 @@ def main():
 
                 if event.key == pygame.K_f:
                     if player.lastpressed == "L" and not bullet_exists:
-                        bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"L",'sources/fireball.png')
+                        bullet = Bullet(player.getX()-int(player.getSizeX()/2),player.getY(),10,10,"L",'sources/fireball.png')
                     if player.lastpressed == "R" and not bullet_exists:
-                        bullet = Bullet(player.getX()+player.getSizeX(),player.getY()+int(player.getSizeY()/2),10,10,"R",'sources/fireball.png')
+                        bullet = Bullet(player.getX()+player.getSizeX(),player.getY(),10,10,"R",'sources/fireball.png')
                     if player.lastpressed == "U" and not bullet_exists:
-                        bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"U",'sources/fireball.png')
+                        bullet = Bullet(player.getX(),player.getY()-int(player.getSizeY()/2),10,10,"U",'sources/fireball.png')
                     if player.lastpressed == "D" and not bullet_exists:
-                        bullet = Bullet(player.getX()+int(player.getSizeX()/2),player.getY()+int(player.getSizeY()/2),10,10,"D",'sources/fireball.png')
+                        bullet = Bullet(player.getX(),player.getY()+int(player.getSizeY()/2),10,10,"D",'sources/fireball.png')
                     bullet_exists = True
 
                 
